@@ -1,0 +1,64 @@
+package datatable
+
+import "fmt"
+
+templ ResultsTable(t *TableModel) {
+	<div class="container" id="results-table">
+		if t == nil {
+			Make a query!
+		} else {
+			@Table(t.Config, t.Rows)
+		}
+	</div>
+}
+
+templ Table(c Config, rows []Row) {
+	<div class="table-container" style="max-height: 450px; overflow-y: auto;">
+		<table class="table is-narrow">
+			<thead>
+				<tr>
+					for i, h := range c.Headers {
+						<th
+							_={ fmt.Sprintf("on click toggle .is-selected on <td.col-%d /> then toggle .is-selected on me", i) }
+							class={ fmt.Sprintf("col-%d", i) }
+						>
+							if h.Abbr != "" {
+								<abbr title={ h.Abbr }>{ h.Title }</abbr>
+							} else {
+								{ h.Title }
+							}
+						</th>
+					}
+				</tr>
+			</thead>
+			<tbody>
+				for _, row := range rows {
+					<tr id={ row.ID } class="text-gray-700 text-base font-normal">
+						for i, hdr := range c.Headers {
+							if row.Href(hdr.Title) != "" {
+								<td class={ fmt.Sprintf("col-%d", i) }>
+									<a class="link" href={ row.Href(hdr.Title) }>{ row.Value(hdr.Title) }</a>
+								</td>
+							} else if row.Action(hdr.Title) != nil {
+								for _, action := range row.Action(hdr.Title) {
+									<td class={ fmt.Sprintf("col-%d", i) }>
+										<a class="link inline-flex items-center justify-center" { action.Attributes... }>
+											if action.Icon != nil {
+												@action.Icon
+											}
+											{ action.Name }
+										</a>
+									</td>
+								}
+							} else {
+								<td class={ fmt.Sprintf("col-%d", i) }>
+									{ row.Value(hdr.Title) }
+								</td>
+							}
+						}
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
