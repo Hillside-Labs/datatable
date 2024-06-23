@@ -1,4 +1,4 @@
-module github.com/hillside-lags/datatable
+module github.com/hillside-labs/datatable
 
 go 1.22.1
 
